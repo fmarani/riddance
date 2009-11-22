@@ -1,0 +1,12 @@
+RIDDANCE
+--------
+
+A message-driven, very fast templating + mass-mailing system. This project served to me as testing ground for Scala/functional programming and to further study JMS/Messaging systems. In itself it is simple, however it uses many technologies:
+
+- Templating engine is a simplified version of FastTemplate (old template engine written in PHP)
+- Message driven architecture (using Scala/JMS)
+- Mailer (written in Java, tested using gnumail)
+- A piloting library written in PHP
+
+It is not complete yet, but it will be soon!
+

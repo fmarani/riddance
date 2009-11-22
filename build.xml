@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Riddance" default="build" basedir=".">
+<description>High performance mass-mailing system</description>
+
+<!-- 1. Define common properties. -->
+
+<property name="src.dir" value="src/main/scala"/>
+<property name="build.dir" value="target/classes"/>
+
+<property name="scala-compiler.jar" value="/usr/share/java/scala-compiler.jar"/>
+<property name="scala-library.jar" value="/usr/share/java/scala-library.jar"/>
+
+<property name="activemq-libs" value="/home/flagz/progs/apache-activemq-5.2.0/lib"/>
+
+<!-- 2. Define Scala CLASSPATH. -->
+
+<path id="scala.classpath">
+  <pathelement location="${scala-compiler.jar}"/>
+  <pathelement location="${scala-library.jar}"/>
+</path>
+
+<!-- 3. Define project CLASSPATH. -->
+
+<path id="project.classpath">
+  <path refid="scala.classpath"/> 
+  <fileset dir="${activemq-libs}">
+    <include name="**/*.jar" />
+  </fileset>
+
+  <pathelement location="${build.dir}"/>
+</path>
+
+<!-- 4. Define scala compiler command. -->
+
+<taskdef resource="scala/tools/ant/antlib.xml">
+  <classpath refid="scala.classpath"/>
+</taskdef>
+
+<!-- 5. Project targets. -->
+
+<target name="build">
+    <scalac srcdir="src/main" destdir="target/classes" classpathref="project.classpath" force="changed">
+        <include name="scala/**/*.scala"/>
+        <include name="scala/**/*.java"/>
+    </scalac>
+ 
+    <javac srcdir="src/main/java" destdir="target/classes" classpathref="project.classpath" force="changed"/>
+</target>
+
+<target name="runMessageBridge">
+	<java classname="MessageBridge" fork="true">
+	<classpath>
+		<path refid="project.classpath"/>
+	</classpath>
+	</java>
+</target>
+
+
+</project>
