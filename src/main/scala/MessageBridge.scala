@@ -19,14 +19,17 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 
-class MessageBridgeListener(val callback: (Message) => Boolean) extends MessageListener {
+class MessageBridgeListener(val callback: (TextMessage) => Boolean) extends MessageListener {
 	def onMessage(message: Message) = {
-		if(callback(message)) message.acknowledge
+        if (message.isInstanceOf[TextMessage]) {
+          val textMessage = message.asInstanceOf[TextMessage];
+		  if(callback(textMessage)) textMessage.acknowledge
+        }
 	}
 }
 
 object MessageBridge {
-	def start(callback: (Message) => Boolean) = {
+	def start(callback: (TextMessage) => Boolean) = {
 		val connFactory = new ActiveMQConnectionFactory("tcp://localhost:61616")
 		val conn = connFactory.createConnection
 		conn.start

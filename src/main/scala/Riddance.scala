@@ -1,19 +1,21 @@
 
 import scala.util.parsing.json.JSON
+import javax.jms.TextMessage
 
 object JMSActor {
 	def forwardToCore = MessageBridge.start(reactToMessages)
 
-	def reactToMessages(JMSMessage: Message) = {
+	def reactToMessages(JMSMessage: TextMessage) = {
 		// message parsing
-		val dataParsed = JSON.parseFull(JMSMessage.getText())
+		val dataParsed = JSON.parseFull(JMSMessage.getText)
 		dataParsed match {
 			case dataParsed: Map[String, Any] => {
-				val templateText: String = dataParsed.getOrElse("template-text","")
-				val templateHtml: String = dataParsed.getOrElse("template-html","")
-				val templateMap: Map = dataParsed.getOrElse("data", Map())
-				val recipient: String = dataParsed.get("email")
-				val blockMaps: Map = dataParsed.getOrElse("blkdata", Map())
+				val templateText: String = dataParsed.getOrElse("template-text","").toString
+				val templateHtml: String = dataParsed.getOrElse("template-html","").toString
+				val recipient: String = dataParsed.get("email").toString
+
+    			val templateMap: Map[String,String] = dataParsed.getOrElse("data", Map())
+				val blockMaps: Map[String,List[Map[String,String]]] = dataParsed.getOrElse("blkdata", Map())
 
 				// inject dependencies through a single object
 				val dependencies = new RiddanceData(recipient, templateText, templateHtml, blockMaps, templateMap)

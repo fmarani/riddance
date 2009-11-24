@@ -49,7 +49,7 @@
 <target name="build">
     <scalac srcdir="src/main" destdir="target/classes" classpathref="project.classpath" force="changed">
         <include name="scala/**/*.scala"/>
-        <include name="scala/**/*.java"/>
+        <include name="java/**/*.java"/>
     </scalac>
  
     <javac srcdir="src/main/java" destdir="target/classes" classpathref="project.classpath" force="changed"/>
