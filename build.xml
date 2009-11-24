@@ -11,6 +11,8 @@
 <property name="scala-library.jar" value="/usr/share/java/scala-library.jar"/>
 
 <property name="activemq-libs" value="/home/flagz/progs/apache-activemq-5.2.0/lib"/>
+<property name="gnumail-libs" value="/usr/share/java"/>
+
 
 <!-- 2. Define Scala CLASSPATH. -->
 
@@ -25,6 +27,12 @@
   <path refid="scala.classpath"/> 
   <fileset dir="${activemq-libs}">
     <include name="**/*.jar" />
+  </fileset>
+
+  <fileset dir="${gnumail-libs}">
+    <include name="gnumail.jar" />
+    <include name="gnumail-providers.jar" />
+    <include name="inetlib.jar" />
   </fileset>
 
   <pathelement location="${build.dir}"/>
@@ -55,5 +63,12 @@
 	</java>
 </target>
 
+<target name="run">
+	<java classname="Riddance" fork="true">
+	<classpath>
+		<path refid="project.classpath"/>
+	</classpath>
+	</java>
+</target>
 
 </project>

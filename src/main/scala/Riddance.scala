@@ -8,7 +8,7 @@ object JMSActor {
 		// message parsing
 		val dataParsed = JSON.parseFull(JMSMessage.getText())
 		dataParsed match {
-			case Map[String, Any] => {
+			case dataParsed: Map[String, Any] => {
 				val templateText: String = dataParsed.getOrElse("template-text","")
 				val templateHtml: String = dataParsed.getOrElse("template-html","")
 				val templateMap: Map = dataParsed.getOrElse("data", Map())
