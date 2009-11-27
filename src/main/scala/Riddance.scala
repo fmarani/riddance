@@ -10,15 +10,20 @@ object JMSActor {
 		val dataParsed = JSON.parseFull(JMSMessage.getText)
 		dataParsed match {
 			case dataParsed: Map[String, Any] => {
-				val templateText: String = dataParsed.getOrElse("template-text","").toString
-				val templateHtml: String = dataParsed.getOrElse("template-html","").toString
-				val recipient: String = dataParsed.get("email").toString
+				def e(s: String) = dataParsed get s
+				val data = (e("template-text"), e("template-html"), e("email"), e("blkdata"), e("data"))
 
-    			val templateMap: Map[String,String] = dataParsed.getOrElse("data", Map())
-				val blockMaps: Map[String,List[Map[String,String]]] = dataParsed.getOrElse("blkdata", Map())
+				// inject dependencies through a single pattern matched object
+				val dependencies: Option[RiddanceData] = data match {
+				case (templateText: String,
+					templateHtml: String,
+					recipient: String,
+				        blockMaps: Map[String,List[Map[String,String]]],
+				        templateMap: Map[String,String]) =>
+					    Some(new RiddanceData(recipient, templateText, templateHtml, blockMaps, templateMap))
+				case _ => None
+				}
 
-				// inject dependencies through a single object
-				val dependencies = new RiddanceData(recipient, templateText, templateHtml, blockMaps, templateMap)
 				RiddanceCore.inject ! dependencies
 			}
 		}
@@ -37,11 +42,14 @@ object RiddanceCore {
 	def inject = {
 		receive {
 			case deps: RiddanceData => {
-                log("Wake up on " + deps.recipient + " request")
+		                log("Wake up on " + deps.recipient + " request")
 				sendMail(deps.recipient, textRender(deps), htmlRender(deps))
 			}
-            case "start" => {
-                log("Starting Riddance/Core")
+		        case "start" => {
+                		log("Starting Riddance/Core")
+			}
+			case _ => {
+                		log("Spurious data on JMS channels: " + _.toString)
 			}
 		}
 	}
