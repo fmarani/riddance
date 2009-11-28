@@ -1,26 +1,25 @@
 
 import scala.util.parsing.json.JSON
 import javax.jms.TextMessage
+import scala.actors.Actor._
 
 object JMSActor {
 	def forwardToCore = MessageBridge.start(reactToMessages)
 
 	def reactToMessages(JMSMessage: TextMessage) = {
 		// message parsing
-		val dataParsed = JSON.parseFull(JMSMessage.getText)
+		//val dataParsed = JSON.parseFull(JMSMessage.getText)
+        val dataParsed = JSON.parseFull("{\"template-text\" : \"bar\", \"template-html\" : \"bar\", \"email\" : \"bar@bar.com\", \"blkdata\" : \"[{\"aaa\" : \"AAA\"}]\", \"data\" : \"{\"zzz\" : \"ZZZ\"}\"}")
 		dataParsed match {
 			case dataParsed: Map[String, Any] => {
 				def e(s: String) = dataParsed get s
+
 				val data = (e("template-text"), e("template-html"), e("email"), e("blkdata"), e("data"))
 
 				// inject dependencies through a single pattern matched object
 				val dependencies: Option[RiddanceData] = data match {
-				case (templateText: String,
-					templateHtml: String,
-					recipient: String,
-				        blockMaps: Map[String,List[Map[String,String]]],
-				        templateMap: Map[String,String]) =>
-					    Some(new RiddanceData(recipient, templateText, templateHtml, blockMaps, templateMap))
+				case (Some(tt: String), Some(th: String), Some(r: String), Some(b: Map[String,List[Map[String,String]]]), Some(m: Map[String,String])) =>
+					    Some(new RiddanceData(r, tt, th, b, m))
 				case _ => None
 				}
 
@@ -35,7 +34,7 @@ class RiddanceData (
     val templateText: String, 
     val templateHtml: String, 
     val blockMaps: Map[String,List[Map[String,String]]], 
-    templateMap: Map[String,String]
+    val templateMap: Map[String,String]
 )
 
 object RiddanceCore {
