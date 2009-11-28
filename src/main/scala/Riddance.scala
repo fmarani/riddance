@@ -2,6 +2,7 @@
 import scala.util.parsing.json.JSON
 import javax.jms.TextMessage
 import scala.actors.Actor._
+import scala.actors.Actor
 
 object JMSActor {
 	def forwardToCore = MessageBridge.start(reactToMessages)
@@ -20,16 +21,15 @@ object JMSActor {
 				data match {
     				case (Some(tt: String), Some(th: String), Some(r: String), Some(b: Map[String,List[Map[String,String]]]), Some(m: Map[String,String])) => {
                         val deps: RiddanceData = new RiddanceData(r, tt, th, b, m)
-					    RiddanceCore.inject ! deps
+					    RiddanceCore ! deps
                     }
                     case x => {
                 		log("Spurious data on JMS channel: " + x.toString)
         			}
 				}
-
-
 			}
 		}
+        RiddanceCore.mailboxSize > RiddanceCore.OVERLOAD_THRESHOLD
 	}
 }
 
@@ -41,12 +41,14 @@ class RiddanceData (
     val templateMap: Map[String,String]
 )
 
-object RiddanceCore {
-	def inject = {
+object RiddanceCore extends Actor {
+    val OVERLOAD_THRESHOLD = 5
+
+	def act = {
 		receive {
 			case deps: RiddanceData => {
 		                log("Wake up on " + deps.recipient + " request")
-				sendMail(deps.recipient, textRender(deps), htmlRender(deps))
+				        sendMail(deps.recipient, textRender(deps), htmlRender(deps))
 			}
 	        case "start" => {
                 		log("Starting Riddance/Core")
@@ -69,7 +71,7 @@ object RiddanceCore {
 }
 
 object Riddance extends Application {
-    RiddanceCore.inject ! "start"
+    RiddanceCore ! "start"
     JMSActor.forwardToCore
 }
 
