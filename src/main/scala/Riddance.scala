@@ -17,13 +17,17 @@ object JMSActor {
 				val data = (e("template-text"), e("template-html"), e("email"), e("blkdata"), e("data"))
 
 				// inject dependencies through a single pattern matched object
-				val dependencies: Option[RiddanceData] = data match {
-				case (Some(tt: String), Some(th: String), Some(r: String), Some(b: Map[String,List[Map[String,String]]]), Some(m: Map[String,String])) =>
-					    Some(new RiddanceData(r, tt, th, b, m))
-				case _ => None
+				data match {
+    				case (Some(tt: String), Some(th: String), Some(r: String), Some(b: Map[String,List[Map[String,String]]]), Some(m: Map[String,String])) => {
+                        val deps: RiddanceData = new RiddanceData(r, tt, th, b, m)
+					    RiddanceCore.inject ! deps
+                    }
+                    case x => {
+                		log("Spurious data on JMS channel: " + x.toString)
+        			}
 				}
 
-				RiddanceCore.inject ! dependencies
+
 			}
 		}
 	}
@@ -44,11 +48,11 @@ object RiddanceCore {
 		                log("Wake up on " + deps.recipient + " request")
 				sendMail(deps.recipient, textRender(deps), htmlRender(deps))
 			}
-		        case "start" => {
+	        case "start" => {
                 		log("Starting Riddance/Core")
 			}
-			case _ => {
-                		log("Spurious data on JMS channels: " + _.toString)
+			case x => {
+                		log("Spurious data on JMS channel: " + x.toString)
 			}
 		}
 	}
