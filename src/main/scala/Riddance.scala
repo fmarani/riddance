@@ -3,6 +3,7 @@ import scala.util.parsing.json.JSON
 import javax.jms.TextMessage
 import scala.actors.Actor._
 import scala.actors.Actor
+import org.apache.log4j._
 
 object JMSActor {
 	def forwardToCore = MessageBridge.start(reactToMessages)
@@ -24,7 +25,7 @@ object JMSActor {
 					    RiddanceCore ! deps
                     }
                     case x => {
-                		log("Spurious data on JMS channel: " + x.toString)
+                		RiddanceCore.log.warn("Spurious data on JMS channel: " + x.toString)
         			}
 				}
 			}
@@ -43,18 +44,16 @@ class RiddanceData (
 
 object RiddanceCore extends Actor {
     val OVERLOAD_THRESHOLD = 5
+    val log = Category.getInstance("Riddance")
 
 	def act = {
 		receive {
 			case deps: RiddanceData => {
-		                log("Wake up on " + deps.recipient + " request")
+		                log.info("Wake up on " + deps.recipient + " request")
 				        sendMail(deps.recipient, textRender(deps), htmlRender(deps))
 			}
 	        case "start" => {
-                		log("Starting Riddance/Core")
-			}
-			case x => {
-                		log("Spurious data on JMS channel: " + x.toString)
+                		log.info("Starting Riddance/Core")
 			}
 		}
 	}
@@ -67,7 +66,6 @@ object RiddanceCore extends Actor {
         Mailer.send(to, "do-not-reply@tangentlabs.co.uk", body, html)
 	}
 
-    private def log(s: String) = println(s)
 }
 
 object Riddance extends Application {
