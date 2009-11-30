@@ -18,8 +18,7 @@ public class Mailer
   /**
     * "send" method to send the message.
     */
-  public static boolean send(String smtpServer, String to, String from
-   , String subject, String body, String html_body)
+  public static boolean send(String smtpServer, String to, String from, String subject, String body, String html_body)
   {
     try
     {

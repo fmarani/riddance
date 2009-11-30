@@ -49,8 +49,9 @@ object RiddanceCore extends Actor {
 	def act = {
 		receive {
 			case deps: RiddanceData => {
-		                log.info("Wake up on " + deps.recipient + " request")
+		                log.info("Processing request...")
 				        sendMail(deps.recipient, textRender(deps), htmlRender(deps))
+                        log.info("Good riddance!")
 			}
 	        case "start" => {
                 		log.info("Starting Riddance/Core")
