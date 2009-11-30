@@ -44,7 +44,7 @@ class RiddanceData (
 
 object RiddanceCore extends Actor {
     val OVERLOAD_THRESHOLD = 5
-    val log = Category.getInstance("Riddance")
+    lazy val log = Category.getInstance("Riddance")
 
 	def act = {
 		receive {
