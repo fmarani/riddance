@@ -16,19 +16,22 @@ object JMSActor {
 			case dataParsed: Map[String, Any] => {
 				def e(s: String) = dataParsed get s
 
-				val data = (e("template-text"), e("template-html"), e("email"), e("blkdata"), e("data"))
+				val data = (e("template-text"), e("template-html"), e("subject"), e("email"), e("blkdata"), e("data"))
 
 				// inject dependencies through a single pattern matched object
 				data match {
-    				case (Some(tt: String), Some(th: String), Some(r: String), Some(b: Map[String,List[Map[String,String]]]), Some(m: Map[String,String])) => {
-                        val deps: RiddanceData = new RiddanceData(r, tt, th, b, m)
+    				case (Some(tt: String), Some(th: String), Some(s: String), Some(r: String), Some(b: Map[String,List[Map[String,String]]]), Some(m: Map[String,String])) => {
+                        val deps: RiddanceData = new RiddanceData(r, s, tt, th, b, m)
 					    RiddanceCore ! deps
                     }
                     case x => {
-                		RiddanceCore.log.warn("Spurious data on JMS channel: " + x.toString)
+                		RiddanceCore.log.warn("Unformatted JSON on JMS channel: " + x.toString)
         			}
 				}
 			}
+            case x => {
+                RiddanceCore.log.warn("Spurious data on JMS channel: " + x.toString)
+            }
 		}
         RiddanceCore.mailboxSize > RiddanceCore.OVERLOAD_THRESHOLD
 	}
@@ -36,6 +39,7 @@ object JMSActor {
 
 class RiddanceData (
     val recipient: String, 
+    val subject: String,
     val templateText: String, 
     val templateHtml: String, 
     val blockMaps: Map[String,List[Map[String,String]]], 
@@ -50,7 +54,7 @@ object RiddanceCore extends Actor {
 		receive {
 			case deps: RiddanceData => {
 		                log.info("Processing request...")
-				        sendMail(deps.recipient, textRender(deps), htmlRender(deps))
+				        sendMail(deps.recipient, subjectRender(deps), textRender(deps), htmlRender(deps))
                         log.info("Good riddance!")
 			}
 	        case "start" => {
@@ -59,12 +63,14 @@ object RiddanceCore extends Actor {
 		}
 	}
 	
+    private def subjectRender(deps: RiddanceData) = TemplateEngine.render(deps.subject, Map(), deps.templateMap)
+
 	private def textRender(deps: RiddanceData) = TemplateEngine.render(deps.templateText, deps.blockMaps, deps.templateMap)
 
 	private def htmlRender(deps: RiddanceData) = TemplateEngine.render(deps.templateHtml, deps.blockMaps, deps.templateMap)
 
-	private def sendMail(to: String, body: String, html: String) = {
-        Mailer.send(to, "do-not-reply@tangentlabs.co.uk", body, html)
+	private def sendMail(to: String, subject: String, body: String, html: String) = {
+        Mailer.send(to, "do-not-reply@tangentlabs.co.uk", subject, body, html)
 	}
 
 }
