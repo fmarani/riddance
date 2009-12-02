@@ -18,13 +18,13 @@ public class Mailer
   /**
     * "send" method to send the message.
     */
-  public static boolean send(String smtpServer, String to, String from, String subject, String body, String html_body)
+  public static boolean send(String to, String from, String subject, String body, String html_body)
   {
     try
     {
       Properties props = System.getProperties();
       // -- Attaching to default Session, or we could start a new one --
-      props.put("mail.smtp.host", smtpServer);
+      props.put("mail.smtp.host", "localhost");
       Session session = Session.getDefaultInstance(props, null);
       // -- Create a new message --
       Message msg = new MimeMessage(session);
