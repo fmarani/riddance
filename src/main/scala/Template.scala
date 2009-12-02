@@ -1,11 +1,7 @@
-//#!/bin/sh
-//exec scala "$0" "$@"
-//!#
 
+import scala.collection.mutable.ListBuffer
 
 object TemplateEngine {
- import scala.collection.mutable.ListBuffer
-
  val reVar = """\{([a-zA-Z0-9]+)\}""".r
 
  def substVars(templateChunk: String, templateMap: Map[String,String]) = {
