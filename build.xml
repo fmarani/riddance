@@ -47,26 +47,19 @@
 <!-- 5. Project targets. -->
 
 <target name="build">
-    <scalac srcdir="src/main" destdir="target/classes" classpathref="project.classpath" force="changed">
+    <scalac srcdir="src/main" destdir="target/classes" classpathref="project.classpath" unchecked="yes">
         <include name="scala/**/*.scala"/>
         <include name="java/**/*.java"/>
     </scalac>
  
-    <javac srcdir="src/main/java" destdir="target/classes" classpathref="project.classpath" force="changed"/>
+    <javac srcdir="src/main/java" destdir="target/classes" classpathref="project.classpath"/>
 </target>
 
-<target name="runMessageBridge">
-	<java classname="MessageBridge" fork="true">
-	<classpath>
-		<path refid="project.classpath"/>
-	</classpath>
-	</java>
-</target>
-
-<target name="run">
+<target name="run" depends="build">
 	<java classname="Riddance" fork="true">
 	<classpath>
 		<path refid="project.classpath"/>
+        <path location="."/>
 	</classpath>
 	</java>
 </target>
