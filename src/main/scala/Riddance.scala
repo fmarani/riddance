@@ -9,9 +9,10 @@ object JMSActor {
 	def forwardToCore = MessageBridge.start(reactToMessages)
 
 	def reactToMessages(JMSMessage: TextMessage) = {
+        RiddanceCore.log.debug("Received JMS message: " + JMSMessage.getText)
+
 		// message parsing
-		//val dataParsed = JSON.parseFull(JMSMessage.getText)
-        val dataParsed = JSON.parseFull("{\"template-text\" : \"bar\", \"template-html\" : \"bar\", \"email\" : \"bar@bar.com\", \"blkdata\" : \"[{\"aaa\" : \"AAA\"}]\", \"data\" : \"{\"zzz\" : \"ZZZ\"}\"}")
+		val dataParsed = JSON.parseFull(JMSMessage.getText)
 		dataParsed match {
 			case dataParsed: Map[String, Any] => {
 				def e(s: String) = dataParsed get s
@@ -48,7 +49,7 @@ class RiddanceData (
 
 object RiddanceCore extends Actor {
     val OVERLOAD_THRESHOLD = 5
-    lazy val log = Category.getInstance("Riddance")
+    lazy val log = Category.getInstance("riddance")
 
 	def act = {
 		receive {
@@ -58,7 +59,10 @@ object RiddanceCore extends Actor {
                         log.info("Good riddance!")
 			}
 	        case "start" => {
-                		log.info("Starting Riddance/Core")
+                		log.info("Riddance/Core now active")
+			}
+            case x => {
+                		log.warn("Cannot act on received data: " + x.toString)
 			}
 		}
 	}
@@ -76,6 +80,8 @@ object RiddanceCore extends Actor {
 }
 
 object Riddance extends Application {
+    RiddanceCore.log.info("Starting Riddance")
+    RiddanceCore.start
     RiddanceCore ! "start"
     JMSActor.forwardToCore
 }

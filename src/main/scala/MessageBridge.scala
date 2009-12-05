@@ -30,12 +30,13 @@ class MessageBridgeListener(val callback: (TextMessage) => Boolean) extends Mess
 
 object MessageBridge {
 	def start(callback: (TextMessage) => Boolean) = {
+        RiddanceCore.log.info("Starting Riddance/JMS")
 		val connFactory = new ActiveMQConnectionFactory("tcp://localhost:61616")
 		val conn = connFactory.createConnection
 		conn.start
 
 		val session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE)
-		val inputQueue = session.createQueue("test-in")
+		val inputQueue = session.createQueue("riddance/in")
 
 		val consumer = session.createConsumer(inputQueue)
 
