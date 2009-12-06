@@ -35,6 +35,10 @@
     <include name="inetlib.jar" />
   </fileset>
 
+  <fileset dir="lib">
+    <include name="**/*.jar" />
+  </fileset>
+
   <pathelement location="${build.dir}"/>
 </path>
 
