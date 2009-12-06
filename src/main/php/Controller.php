@@ -1,5 +1,13 @@
 <?php
 
+define(PATH_TO_TAOBASE,"/home/flagz/lavoro/phptests/taobase/classes");
+
+require_once PATH_TO_TAOBASE.'/messaging/Client.php';
+require_once PATH_TO_TAOBASE.'/messaging/Message.php';
+require_once PATH_TO_TAOBASE.'/messaging/Destination.php';
+require_once PATH_TO_TAOBASE.'/messaging/destination/Queue.php';
+require_once PATH_TO_TAOBASE.'/messaging/message/JsonMessage.php';
+
 class riddance_UnitOfWork
 {
     /**
@@ -46,7 +54,7 @@ class riddance_Controller
 
     public function disconnect()
     {
-        $c->disconnect();
+        $this->client->disconnect();
     }
 
     private function flatten_array($array) {
@@ -112,3 +120,28 @@ class riddance_Controller
         $this->client->send($this->queue, $envelope);
     }
 }
+
+$riddance = new riddance_Controller;
+$riddance->connect();
+
+$uow = new riddance_UnitOfWork;
+$uow->templateText = "Dear {name}, you received {object}. bye!";
+$uow->templateHtml = "<html><body>Dear <b>{name}</b>, <br/> you received {object}. bye!</body></html>";
+$uow->subject = "a very important email";
+$uow->emails = array("flagzeta@gmail.com","flagzeta@yahoo.it","flagz@localhost");
+$uow->templateVars = array(
+    array(
+        "name" => "flagzgmail",
+        "object" => "ironboard"
+    ),
+    array(
+        "name" => "flagzyahoo",
+        "object" => "surfboard"
+    ),
+    array(
+        "name" => "flagzlocal",
+        "object" => "snowboard"
+    ));
+
+$riddance->release($uow);
+$riddance->disconnect();
