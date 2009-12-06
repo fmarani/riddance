@@ -36,7 +36,7 @@ object MessageBridge {
 		conn.start
 
 		val session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE)
-		val inputQueue = session.createQueue("riddance/in")
+		val inputQueue = session.createQueue("riddance-in")
 
 		val consumer = session.createConsumer(inputQueue)
 
