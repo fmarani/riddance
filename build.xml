@@ -24,10 +24,10 @@
 <!-- 3. Define project CLASSPATH. -->
 
 <path id="project.classpath">
-  <!-- <path refid="scala.classpath"/> -->
+  <!-- <path refid="scala.classpath"/> 
   <fileset dir="${activemq-libs}">
     <include name="**/*.jar" />
-  </fileset>
+  </fileset> -->
 
   <fileset dir="${gnumail-libs}">
     <include name="gnumail.jar" />
