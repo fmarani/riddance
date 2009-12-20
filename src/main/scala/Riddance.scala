@@ -14,7 +14,7 @@ object JMSActor {
 		// message parsing
 		val dataParsed = JSON.parseFull(JMSMessage.getText)
 		dataParsed match {
-			case dataParsed: Map[String, Any] => {
+			case Some(dataParsed: Map[String, Any]) => {
 				def e(s: String) = dataParsed get s
 
 				val data = (e("template-text"), e("template-html"), e("subject"), e("email"), e("blkdata"), e("data"))
@@ -23,6 +23,7 @@ object JMSActor {
 				data match {
     				case (Some(tt: String), Some(th: String), Some(s: String), Some(r: String), Some(b: Map[String,List[Map[String,String]]]), Some(m: Map[String,String])) => {
                         val deps: RiddanceData = new RiddanceData(r, s, tt, th, b, m)
+                        RiddanceCore.log.debug("Injecting into core: " + deps.toString)
 					    RiddanceCore ! deps
                     }
                     case x => {
