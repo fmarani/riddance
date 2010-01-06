@@ -17,11 +17,11 @@ object JMSActor {
 			case Some(dataParsed: Map[String, Any]) => {
 				def e(s: String) = dataParsed get s
 
-				val data = (e("template-text"), e("template-html"), e("subject"), e("email"), e("blkdata"), e("data"))
+				val data = (e("template-text"), e("template-html"), e("subject"), e("emails"), e("blkdata"), e("data"))
 
 				// inject dependencies through a single pattern matched object
 				data match {
-    				case (Some(tt: String), Some(th: String), Some(s: String), Some(r: String), Some(b: Map[String,List[Map[String,String]]]), Some(m: Map[String,String])) => {
+    				case (Some(tt: String), Some(th: String), Some(s: String), Some(r: List[String]), Some(b: Map[String,List[Map[String,String]]]), Some(m: Map[String,String])) => {
                         val deps: RiddanceData = new RiddanceData(r, s, tt, th, b, m)
                         RiddanceCore.log.debug("Injecting into core: " + deps.toString)
 					    RiddanceCore ! deps
@@ -40,7 +40,7 @@ object JMSActor {
 }
 
 class RiddanceData (
-    val recipient: String, 
+    val recipients: List[String], 
     val subject: String,
     val templateText: String, 
     val templateHtml: String, 
