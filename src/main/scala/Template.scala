@@ -55,16 +55,3 @@ object TemplateEngine {
  def render = iterBlocks _
 }
 
-object Template extends Application {
-
-	val template = scala.io.Source.fromFile("template.tpl").getLines.mkString
-	val subexample = List(
-	 Map("Id" -> "12", "Data" -> "Lots of data"),
-	 Map("Id" -> "34", "Data" -> "Even more data") )
-	val example = Map("Name" -> "John")
-	val exampleBlocks = Map("TestBlock" -> subexample)
-	
-	println(TemplateEngine.render(template, exampleBlocks, example))
-}
-
-//Template
