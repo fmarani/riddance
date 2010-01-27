@@ -3,6 +3,7 @@ import scala.xml._
 
 val x = <riddance req="mailout">
 <template>
+    <subject>viagra for free</subject>
     <text>testestest</text>
     <html><![CDATA[<html><body>ayo!</body></html>]]></html>
 </template>
