@@ -1,0 +1,53 @@
+EXAMPLE OF XML
+--------------
+
+<riddance req="mailout">
+<template>
+    <subject>EMAIL SUBJECT</subject>
+    <text>EMAIL BODY TEXT</text>
+    <html><![CDATA[EMAIL BODY HTML]]></html>
+</template>
+<iterations>
+<unit email="RECIPIENT1@DOMAIN.COM">
+<map k="VAR1" v="john"/>
+<map k="VAR2" v="smith"/>
+<block name="BLOCK1">
+ <item>
+ <map k="product" v="PRODUCT1"/>
+ </item>
+ <item>
+ <map k="product" v="PRODUCT2"/>
+ </item>
+</block>
+</unit>
+<unit email="RECIPIENT2@DOMAIN2.COM">
+<map k="VAR1" v="michael"/>
+<map k="VAR2" v="jordan"/>
+<block name="block1">
+ <item>
+ <map k="product" v="PRODUCTX"/>
+ </item>
+ <item>
+ <map k="product" v="PRODUCTY"/>
+ </item>
+</block>
+</unit>
+</iterations>
+</riddance>
+
+
+EXAMPLE OF TEMPLATE HTML
+------------------------
+
+<html>
+<body>
+<h1>attention</h1>
+This is {Name}<br/>
+
+<!-- BEGIN DYNAMIC BLOCK: TestBlock -->
+{Id}, {Data}...<br/>
+<!-- END DYNAMIC BLOCK: TestBlock -->
+
+end.
+</body>
+</html>
