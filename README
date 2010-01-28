@@ -13,6 +13,12 @@ It is not complete yet, but it will be soon!
 
 LICENSE
 -------
-Distributed under the terms of GNU LGPL v.3
+Distributed under the terms of GNU LGPL v3
 
 See LICENSE for details
+
+
+FORMATS OF MESSAGES AND TEMPLATES
+---------------------------------
+It is possible to not use the PHP library and send directly XML messages to Riddance, this format is described in FORMAT file.
+Regarding templates, there is also a brief description of their format in this file.
