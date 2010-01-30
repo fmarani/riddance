@@ -17,7 +17,8 @@ object JMSActor {
         
         def getTemplateBlocks(blocks: NodeSeq) = {
             def getItemsMap(items: NodeSeq) = items.toList map (item => getTemplateMap(item\"map") )
-            blocks.toList map (block => (block\"@name", getItemsMap(block\"item"))) 
+            val blockList = blocks map (block => Map((block\"@name").text -> getItemsMap(block\"item"))) 
+            blockList reduceLeft ((x:Map[String,List[Map[String,String]]],y:Map[String,List[Map[String,String]]]) => x++y)
         }
         def getSubject(xmlbody: Elem) = (xmlbody\"template"\"subject").text
         def getTemplateText(xmlbody: Elem) = (xmlbody\"template"\"text").text
