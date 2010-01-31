@@ -6,7 +6,8 @@ require_once PATH_TO_TAOBASE.'/messaging/Client.php';
 require_once PATH_TO_TAOBASE.'/messaging/Message.php';
 require_once PATH_TO_TAOBASE.'/messaging/Destination.php';
 require_once PATH_TO_TAOBASE.'/messaging/destination/Queue.php';
-require_once PATH_TO_TAOBASE.'/messaging/message/JsonMessage.php';
+require_once PATH_TO_TAOBASE.'/messaging/message/TextMessage.php';
+require_once PATH_TO_TAOBASE.'/messaging/message/Factory.php';
 
 class riddance_UnitOfWork
 {
@@ -100,22 +101,66 @@ class riddance_Controller
         }
 
         //{\"template-text\" : \"bar\", \"template-html\" : \"bar\", \"email\" : \"bar@bar.com\", \"blkdata\" : \"[{\"aaa\" : \"AAA\"}]\", \"data\" : \"{\"zzz\" : \"ZZZ\"}\"}
-        $prepared = array(
-          "template-text" => $unitOfWork->templateText,
-          "template-html" => $unitOfWork->templateHtml,
-          "subject" => $unitOfWork->subject,
-          "emails" => $unitOfWork->emails,
-          "blkdata" => $blockMapContainers,
-          "data" => $templateMaps
-        );
-        return $prepared;
+
+        if (count($unitOfWork->emails) != count($templateMaps))
+            throw new RuntimeException("Number of emails and template contexts is different");
+
+        // 3. create xml description of resulting structure
+        $xw = new XMLWriter();
+        $xw->openMemory();
+//        $xw->startDocument('1.0', 'UTF-8');
+
+        $xw->startElement("riddance");
+        $xw->writeAttribute("req","mailout");
+
+        $xw->startElement("template");
+        $xw->writeElement("subject", $unitOfWork->subject);
+        $xw->writeElement("text", $unitOfWork->templateText);
+        $xw->startElement("html");
+        $xw->writeCData($unitOfWork->templateHtml);
+        $xw->endElement();
+        $xw->endElement();
+        
+        $xw->startElement("iterations");
+        for ($i = 0; $i < count($unitOfWork->emails); $i++) {
+            $xw->startElement("unit");
+            $xw->writeAttribute("email", $unitOfWork->emails[$i]);
+            foreach ($templateMaps[$i] as $k => $v) {
+                $xw->startElement("map");
+                $xw->writeAttribute("k", $k);
+                $xw->writeAttribute("v", $v);
+                $xw->endElement();
+            }
+            foreach ($blockMapContainers[$i] as $blockName => $blockMapContainer) {
+                $xw->startElement("block");
+                $xw->writeAttribute("name", $blockName);
+                foreach ($blockMapContainer as $blockMap) {
+                    $xw->startElement("item");
+                    foreach ($blockMap as $k => $v) {
+                        $xw->startElement("map");
+                        $xw->writeAttribute("k", $k);
+                        $xw->writeAttribute("v", $v);
+                        $xw->endElement();
+                    }
+                    $xw->endElement();
+                }
+                $xw->endElement();
+            }
+            $xw->endElement(); // unit
+        }
+        $xw->endElement(); // iterations
+        $xw->endElement(); // riddance
+
+        $xw->endDocument();
+        return $xw->flush();
     }
 
     public function release(riddance_UnitOfWork $unitOfWork)
     {
         // CHUNKIFY UNITOFWORK!! (max 300 emails per msg)
         $content = $this->prepareForSubmission($unitOfWork);
-	    $envelope = new messaging_message_JsonMessage($content);
+        print $content;
+	    $envelope = new messaging_message_TextMessage($content);
 
         $this->client->send($this->queue, $envelope);
     }
