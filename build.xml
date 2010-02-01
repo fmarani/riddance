@@ -55,10 +55,10 @@
 
     <scalac srcdir="src/main" destdir="target/classes" classpathref="project.classpath" unchecked="yes">
         <include name="scala/**/*.scala"/>
-        <include name="java/**/*.java"/>
+        <!-- <include name="java/**/*.java"/> -->
     </scalac>
  
-    <javac srcdir="src/main/java" destdir="target/classes" classpathref="project.classpath"/>
+    <!-- <javac srcdir="src/main/java" destdir="target/classes" classpathref="project.classpath"/> -->
 </target>
 
 <target name="run" depends="build">
