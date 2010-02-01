@@ -12,13 +12,15 @@ object JMSActor {
         // define internal helpers for xml extraction
         def getTemplateMap(xmlseq: NodeSeq) = {
             val attrList = xmlseq map (x => Map((x\"@k").text -> (x\"@v").text))
-            attrList reduceLeft ((x:Map[String,String],y:Map[String,String]) => x++y)
+            (attrList foldLeft Map[String,String]()) ((x:Map[String,String],y:Map[String,String]) => x++y)
         }
         
         def getTemplateBlocks(blocks: NodeSeq) = {
             def getItemsMap(items: NodeSeq) = items.toList map (item => getTemplateMap(item\"map") )
             val blockList = blocks map (block => Map((block\"@name").text -> getItemsMap(block\"item"))) 
-            blockList reduceLeft ((x:Map[String,List[Map[String,String]]],y:Map[String,List[Map[String,String]]]) => x++y)
+            (blockList foldLeft Map[String,List[Map[String,String]]]()) (
+                (x:Map[String,List[Map[String,String]]],y:Map[String,List[Map[String,String]]]) => x++y
+            )
         }
         def getSubject(xmlbody: Elem) = (xmlbody\"template"\"subject").text
         def getTemplateText(xmlbody: Elem) = (xmlbody\"template"\"text").text
@@ -40,7 +42,8 @@ object JMSActor {
             RiddanceCore ! deps
         } catch {
             case exc => {
-                RiddanceCore.log.debug("Error parsing XML")
+                RiddanceCore.log.debug("Error parsing XML: " + exc.toString)
+                exc.printStackTrace()
                 true // forcefully acknowledges badly formatted messages
             }
         }
@@ -63,25 +66,27 @@ object RiddanceCore extends Actor {
     lazy val log = Category.getInstance("riddance")
 
 	def act = {
-		receive {
-			case deps: RiddanceData => {
-		                log.info("Processing request...")
-                        deps.data.foreach( step => 
-                            sendMail(step._1, // recipient
-                                TemplateEngine.render(deps.subject, Map(), step._2), // subject
-                                TemplateEngine.render(deps.templateText, step._3, step._2), // email text
-                                TemplateEngine.render(deps.templateHtml, step._3, step._2) // email html
+        loop {
+		    react {
+			    case deps: RiddanceData => {
+		                    log.info("Processing request...")
+                            deps.data.foreach( step => 
+                                sendMail(step._1, // recipient
+                                    TemplateEngine.render(deps.subject, Map(), step._2), // subject
+                                    TemplateEngine.render(deps.templateText, step._3, step._2), // email text
+                                    TemplateEngine.render(deps.templateHtml, step._3, step._2) // email html
+                                )
                             )
-                        )
-                        log.info("Good riddance!")
-			}
-	        case "start" => {
-                		log.info("Riddance/Core now active")
-			}
-            case x => {
-                		log.warn("Cannot act on received data: " + x.toString)
-			}
-		}
+                            log.info("Good riddance!")
+			    }
+	            case "start" => {
+                    		log.info("Riddance/Core now active")
+			    }
+                case x => {
+                    		log.warn("Cannot act on received data: " + x.toString)
+			    }
+		    }
+        }
 	}
 	
 	private def sendMail(to: String, subject: String, body: String, html: String) = {
