@@ -27,7 +27,7 @@ object Mailer {
             msg.setSubject(subject)
 
             // multipart message - html and text
-            val mp = new MimeMultipart()
+            val mp = new MimeMultipart("alternative")
 
             val textPart = new MimeBodyPart()
             textPart.setText(body)
