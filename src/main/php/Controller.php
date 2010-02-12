@@ -159,34 +159,9 @@ class riddance_Controller
     {
         // CHUNKIFY UNITOFWORK!! (max 300 emails per msg)
         $content = $this->prepareForSubmission($unitOfWork);
-        print $content;
-	    $envelope = new messaging_message_TextMessage($content);
+	$envelope = new messaging_message_TextMessage($content);
 
         $this->client->send($this->queue, $envelope);
     }
 }
 
-$riddance = new riddance_Controller;
-$riddance->connect();
-
-$uow = new riddance_UnitOfWork;
-$uow->templateText = "Dear {name}, you received {object}. bye!";
-$uow->templateHtml = "<html><body>Dear <b>{name}</b>, <br/> you received {object}. bye!</body></html>";
-$uow->subject = "a very important email";
-$uow->emails = array("flagzeta@gmail.com","flagzeta@yahoo.it","flagz@localhost");
-$uow->templateVars = array(
-    array(
-        "name" => "flagzgmail",
-        "object" => "ironboard"
-    ),
-    array(
-        "name" => "flagzyahoo",
-        "object" => "surfboard"
-    ),
-    array(
-        "name" => "flagzlocal",
-        "object" => "snowboard"
-    ));
-
-$riddance->release($uow);
-$riddance->disconnect();
