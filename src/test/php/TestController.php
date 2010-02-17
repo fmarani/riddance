@@ -1,6 +1,6 @@
 <?php
 
-define(PATH_TO_TAOBASE,"/home/flagz/lavoro/phptests/taobase/classes");
+define("PATH_TO_TAOBASE","/home/flagz/lavoro/phptests/taobase/classes");
 
 require_once PATH_TO_TAOBASE.'/messaging/Client.php';
 require_once PATH_TO_TAOBASE.'/messaging/Message.php';
