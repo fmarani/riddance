@@ -6,6 +6,7 @@ require_once PATH_TO_TAOBASE.'/messaging/Client.php';
 require_once PATH_TO_TAOBASE.'/messaging/Message.php';
 require_once PATH_TO_TAOBASE.'/messaging/Destination.php';
 require_once PATH_TO_TAOBASE.'/messaging/destination/Queue.php';
+require_once PATH_TO_TAOBASE.'/messaging/destination/Factory.php';
 require_once PATH_TO_TAOBASE.'/messaging/message/TextMessage.php';
 require_once PATH_TO_TAOBASE.'/messaging/message/Factory.php';
 

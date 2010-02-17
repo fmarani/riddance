@@ -37,7 +37,7 @@ class riddance_Controller
     public function connect()
     {
         $c = new messaging_Client();
-        $q = messaging_destination_Queue::create('riddance.in');
+        $q = messaging_destination_Factory::createQueue('riddance.in');
 
         $c->connect();
         $this->client = $c;
