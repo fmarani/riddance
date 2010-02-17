@@ -1,14 +1,5 @@
 <?php
 
-define(PATH_TO_TAOBASE,"/home/flagz/lavoro/phptests/taobase/classes");
-
-require_once PATH_TO_TAOBASE.'/messaging/Client.php';
-require_once PATH_TO_TAOBASE.'/messaging/Message.php';
-require_once PATH_TO_TAOBASE.'/messaging/Destination.php';
-require_once PATH_TO_TAOBASE.'/messaging/destination/Queue.php';
-require_once PATH_TO_TAOBASE.'/messaging/message/TextMessage.php';
-require_once PATH_TO_TAOBASE.'/messaging/message/Factory.php';
-
 class riddance_UnitOfWork
 {
     /**
@@ -46,7 +37,7 @@ class riddance_Controller
     public function connect()
     {
         $c = new messaging_Client();
-        $q = messaging_destination_Queue::create('riddance-in');
+        $q = messaging_destination_Queue::create('riddance.in');
 
         $c->connect();
         $this->client = $c;
