@@ -87,7 +87,7 @@ class riddance_Controller
                     $templateMap[$key] = strval($value);
                 }
             }
-            array_push($blockMapContainers, array_map($this->flatten_array, $blockMapContainer));
+            array_push($blockMapContainers, array_map(array($this, "flatten_array"), $blockMapContainer));
             array_push($templateMaps, $templateMap);
         }
 
