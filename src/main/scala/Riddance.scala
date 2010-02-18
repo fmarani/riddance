@@ -49,7 +49,7 @@ object JMSActor {
         }
 
         // discard when above threshold, then it will be picked up by another riddance process
-        RiddanceCore.mailboxSize > RiddanceCore.OVERLOAD_THRESHOLD
+        RiddanceCore.mailboxSize < RiddanceCore.OVERLOAD_THRESHOLD
 	}
 }
 
