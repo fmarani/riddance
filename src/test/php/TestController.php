@@ -10,6 +10,7 @@ require_once PATH_TO_TAOBASE.'/messaging/destination/Factory.php';
 require_once PATH_TO_TAOBASE.'/messaging/message/TextMessage.php';
 require_once PATH_TO_TAOBASE.'/messaging/message/Factory.php';
 
+require_once dirname(__FILE__).'/../../main/php/UnitOfWork.php';
 require_once dirname(__FILE__).'/../../main/php/Controller.php';
 
 

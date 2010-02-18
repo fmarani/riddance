@@ -1,34 +1,5 @@
 <?php
 
-class riddance_UnitOfWork
-{
-    /**
-     * @var string
-     */
-    public $templateText;
-
-    /**
-     * @var string
-     */
-    public $templateHtml;
-    
-    /**
-     * @var string
-     */
-    public $subject;
-    
-    /**
-     * @var array
-     */
-    public $emails;
-    
-    /**
-     * @var array
-     */
-    public $templateVars;
-}
-
-
 class riddance_Controller
 {
     private $client;
@@ -91,15 +62,12 @@ class riddance_Controller
             array_push($templateMaps, $templateMap);
         }
 
-        //{\"template-text\" : \"bar\", \"template-html\" : \"bar\", \"email\" : \"bar@bar.com\", \"blkdata\" : \"[{\"aaa\" : \"AAA\"}]\", \"data\" : \"{\"zzz\" : \"ZZZ\"}\"}
-
         if (count($unitOfWork->emails) != count($templateMaps))
             throw new RuntimeException("Number of emails and template contexts is different");
 
         // 3. create xml description of resulting structure
         $xw = new XMLWriter();
         $xw->openMemory();
-//        $xw->startDocument('1.0', 'UTF-8');
 
         $xw->startElement("riddance");
         $xw->writeAttribute("req","mailout");
