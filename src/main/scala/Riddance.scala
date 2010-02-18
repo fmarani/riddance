@@ -71,11 +71,15 @@ object RiddanceCore extends Actor {
 			    case deps: RiddanceData => {
 		                    log.info("Processing request...")
                             deps.data.foreach( step => 
-                                sendMail(step._1, // recipient
-                                    TemplateEngine.render(deps.subject, Map(), step._2), // subject
-                                    TemplateEngine.render(deps.templateText, step._3, step._2), // email text
-                                    TemplateEngine.render(deps.templateHtml, step._3, step._2) // email html
-                                )
+                                try {
+                                    sendMail(step._1, // recipient
+                                        TemplateEngine.render(deps.subject, Map(), step._2), // subject
+                                        TemplateEngine.render(deps.templateText, step._3, step._2), // email text
+                                        TemplateEngine.render(deps.templateHtml, step._3, step._2) // email html
+                                    )
+                                } catch {
+                                    case exc => log.warn("Error sending to " + step._1.toString)
+                                }
                             )
                             log.info("Good riddance!")
 			    }
