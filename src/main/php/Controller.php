@@ -1,5 +1,15 @@
 <?php
+/**
+ * @package riddance
+ * @copyright 2010 Tangent Labs
+ * @version SVN: $Id: Client.php 1589 2010-02-21 01:23:35Z maranif $
+ */
 
+/**
+ * Riddance controller, depends on messaging package
+ * 
+ * @package riddance
+ */
 class riddance_Controller
 {
     private $client;
@@ -118,7 +128,7 @@ class riddance_Controller
     {
         // CHUNKIFY UNITOFWORK!! (max 300 emails per msg)
         $content = $this->prepareForSubmission($unitOfWork);
-	$envelope = new messaging_message_TextMessage($content);
+	    $envelope = new messaging_message_TextMessage($content);
 
         $this->client->send($this->queue, $envelope);
     }
